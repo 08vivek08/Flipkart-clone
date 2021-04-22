@@ -24,7 +24,16 @@ exports.validateSigninRequest = [
 exports.isRequestValidated = (req, res, next) => {
     const errors = validationResult(req);
     if (errors.array().length > 0) {
-        return res.status(400).json({ error: errors.array()[0].msg    });
+        return res.status(400).json({ error: errors.array()[0].msg });
     }
+    next();
+}
+exports.reqUser = (req, res, next) => {
+    req.body.role = 'user';
+    next();
+}
+
+exports.reqAdmin = (req, res, next) => {
+    req.body.role = 'admin';
     next();
 }
