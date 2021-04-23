@@ -1,1 +1,0 @@
-web: cd ./backend-e-commerce && npm start

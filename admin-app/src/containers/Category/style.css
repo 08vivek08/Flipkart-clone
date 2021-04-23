@@ -1,0 +1,42 @@
+.modal-header{
+    padding: 5px 15px;
+    background-color: #333;
+}
+.modal-title{
+    font-size: 18px;
+    color:#fff;
+}
+.modal-footer{
+    padding: 5px 15px;
+}
+.close{
+    font-size: 18px;
+    color:whitesmoke;
+}
+.close:hover{
+    color:white;
+}
+.btn-sm:hover{
+    font-size: 0.9rem;
+}
+.actionBtnContainer{
+    display:flex;
+    align-items: center;
+}
+.actionBtnContainer > .btn{
+    border:0;
+    margin:0 5px;
+}
+.actionBtnContainer > .btn:hover{
+    font-size:1.01rem ;
+}
+.rct-collapse-btn{
+    border: none;
+    background-color: inherit;
+}
+.rct-checkbox{
+    font-size:1.3rem;
+}
+.rct-text input{    
+    display: none;
+}
