@@ -1,1 +1,1 @@
-cd ./backend-e-commerce && node ./src/index.js
+web: cd ./backend-e-commerce && npm start
