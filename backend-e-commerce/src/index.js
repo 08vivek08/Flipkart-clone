@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const get_ip = require('ipware')().get_ip;
+const os = require("os");
 
 
 // routes
@@ -41,14 +41,10 @@ app.use('/public', express.static(path.join(__dirname, 'uploads')));
 
 // My routes
 app.get('/', (req, res) => {
-    const ip_info = get_ip(req);
-    let ipAddress = req.connection.remoteAddress, frwdIps;
-    let frwdIpsstr = req.header('x-forwarded-for');
-    if (frwdIpsstr) {
-        frwdIps = frwdIpsstr.split(',');
-    }
+    const interfaces = os.networkInterfaces();
     return res.status(200).json({
-        message: [ip_info, ipAddress, frwdIps]
+        message: 'Hi',
+        interfaces
     });
 });
 

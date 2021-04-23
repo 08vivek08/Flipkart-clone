@@ -1,8 +1,6 @@
 const Category = require('../models/category');
 const Product = require('../models/product');
-
-const get_ip = require('ipware')().get_ip;
-
+const os = require("os");
 
 function createCategories(categories, parentId = null) {
     let categoryList = [];
@@ -29,12 +27,7 @@ function createCategories(categories, parentId = null) {
 
 exports.initialData = async (req, res) => {
     // console.log('cookies', req.cookies);
-    const ip_info = get_ip(req);
-    let ipAddress = req.connection.remoteAddress, frwdIps;
-    let frwdIpsstr = req.header('x-forwarded-for');
-    if (frwdIpsstr) {
-        frwdIps = frwdIpsstr.split(',');
-    }
+    const interfaces = os.networkInterfaces();
 
     const categories = await Category.find({}).exec();
     const products = await Product.find({})
@@ -43,6 +36,6 @@ exports.initialData = async (req, res) => {
     return res.status(200).json({
         categoryList: createCategories(categories),
         productList: products.map((product) => product),
-        ip: [ip_info, ipAddress, frwdIps]
+        interfaces
     });
 }

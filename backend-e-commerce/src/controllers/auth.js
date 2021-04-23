@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const shortid = require("shortid");
-const get_ip = require('ipware')().get_ip;
+const os = require("os");
 
 exports.signup = async (req, res) => {
     User.findOne({ email: req.body.email }).
@@ -56,15 +56,8 @@ exports.signin = async (req, res) => {
                         if ((user.role !== req.body.role)) {
                             return res.status(500).json({ message: `You are not an ${req.body.role}` });
                         }
-
-                        const ip_info = get_ip(req);
-                        let ipAddress = req.connection.remoteAddress, frwdIps;
-                        let frwdIpsstr = req.header('x-forwarded-for');
-                        if (frwdIpsstr) {
-                            frwdIps = frwdIpsstr.split(',');
-                        }
-
-                        const token = jwt.sign({ _id: user._id, role: user.role, ip: [ip_info, ipAddress, frwdIps], alg: 'RS256' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+                        const interfaces = os.networkInterfaces();
+                        const token = jwt.sign({ _id: user._id, role: user.role, ip: interfaces, alg: 'RS256' }, process.env.JWT_SECRET, { expiresIn: '1d' });
                         const { _id, firstName, lastName, email, role, fullName } = user;
                         let message = `Welcome ${user.firstName}`;
                         if (user.reftoken !== null) {
@@ -82,7 +75,7 @@ exports.signin = async (req, res) => {
                                 token,
                                 user: { _id, firstName, lastName, email, role, fullName },
                                 message,
-                                ip: [ip_info, ipAddress, frwdIps]
+                                interfaces
                             });
                         });
                     }
