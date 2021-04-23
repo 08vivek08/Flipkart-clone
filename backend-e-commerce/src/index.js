@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const get_ip = require('ipware')().get_ip;
+
 
 // routes
 const authRoutes = require("./routes/auth");
@@ -39,13 +41,14 @@ app.use('/public', express.static(path.join(__dirname, 'uploads')));
 
 // My routes
 app.get('/', (req, res) => {
+    const ip_info = get_ip(req);
     let ipAddress = req.connection.remoteAddress, frwdIps;
     let frwdIpsstr = req.header('x-forwarded-for');
     if (frwdIpsstr) {
         frwdIps = frwdIpsstr.split(',');
     }
     return res.status(200).json({
-        message: [ipAddress,frwdIps]
+        message: [ip_info, ipAddress, frwdIps]
     });
 });
 

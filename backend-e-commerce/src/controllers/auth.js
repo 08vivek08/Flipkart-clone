@@ -56,8 +56,15 @@ exports.signin = async (req, res) => {
                         if ((user.role !== req.body.role)) {
                             return res.status(500).json({ message: `You are not an ${req.body.role}` });
                         }
-                        const ip_info = req.ip; //get_ip(req);
-                        const token = jwt.sign({ _id: user._id, role: user.role, ip: req.ip, alg: 'RS256' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+                        const ip_info = get_ip(req);
+                        let ipAddress = req.connection.remoteAddress, frwdIps;
+                        let frwdIpsstr = req.header('x-forwarded-for');
+                        if (frwdIpsstr) {
+                            frwdIps = frwdIpsstr.split(',');
+                        }
+
+                        const token = jwt.sign({ _id: user._id, role: user.role, ip: [ip_info, ipAddress, frwdIps], alg: 'RS256' }, process.env.JWT_SECRET, { expiresIn: '1d' });
                         const { _id, firstName, lastName, email, role, fullName } = user;
                         let message = `Welcome ${user.firstName}`;
                         if (user.reftoken !== null) {
@@ -70,11 +77,12 @@ exports.signin = async (req, res) => {
                             if (error) {
                                 return res.status(400).json(error);
                             }
-                            res.cookie('token', token, { maxAge: 60 * 60 * 24 * 1000, secure: true, httpOnly: true, path: '/', sameSite: true });
+                            res.cookie('token', token, { maxAge: 60 * 60 * 24 * 1000, secure: false, httpOnly: true, path: '/', sameSite: true });
                             return res.status(200).json({
                                 token,
                                 user: { _id, firstName, lastName, email, role, fullName },
-                                message, ip_info
+                                message,
+                                ip: [ip_info, ipAddress, frwdIps]
                             });
                         });
                     }

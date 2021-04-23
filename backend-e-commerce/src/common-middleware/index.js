@@ -8,7 +8,7 @@ exports.requireSignin = async (req, res, next) => {
         try {
             const user = jwt.verify(token, process.env.JWT_SECRET);
             if (user) {
-                if (req.ip !== user.ip) return res.status(511).json({ message: 'Access denied' });
+                // if (req.ip !== user.ip) return res.status(511).json({ message: 'Access denied' });
                 const _user = await User.findById(user._id);
                 if (_user && _user.isSignedIn && _user.reftoken) {
                     jwt.verify(_user.reftoken, token, (error, ref) => {
@@ -30,7 +30,7 @@ exports.requireSignin = async (req, res, next) => {
                 }
             }
             else {
-                return res.status(511).json({ message: "Token expired" });
+                return res.status(511).json({ message: "Your Token expired" });
             }
         }
         catch (error) {

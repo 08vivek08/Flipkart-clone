@@ -4,7 +4,7 @@
   "description": "This is backend of e-commerce flipkart clone project",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "nodemon ./src/index.js || node ./src/index.js",
     "publishToHeroku": "cd ../ && git subtree push --prefix backend-e-commerce heroku-app-backend main || true"
   },
   "keywords": [
