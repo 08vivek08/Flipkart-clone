@@ -6,7 +6,7 @@ const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const os = require("os");
-
+const get_ip = require('ipware')().get_ip;
 
 // routes
 const authRoutes = require("./routes/auth");
@@ -34,7 +34,7 @@ mongoose.connect(`mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO
 
 // Middlewares
 app.use(cors());
-app.use(cookieParser());
+app.use(cookieParser('nothing is secret'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'uploads')));
@@ -42,9 +42,16 @@ app.use('/public', express.static(path.join(__dirname, 'uploads')));
 // My routes
 app.get('/', (req, res) => {
     const interfaces = os.networkInterfaces();
+    const ip_info = get_ip(req);
+    let ipAddress = req.socket.remoteAddress || req.connection.remoteAddress || req.connection.socket.remoteAddress, frwdIps;
+    let frwdIpsstr = req.header('x-forwarded-for');
+    if (frwdIpsstr) {
+        frwdIps = frwdIpsstr.split(',');
+    }
     return res.status(200).json({
+        interfaces,
         message: 'Hi',
-        interfaces
+        ip: [ip_info, ipAddress, frwdIps, frwdIpsstr]
     });
 });
 
@@ -65,6 +72,6 @@ app.use('/api', pageRoutes);
 
 
 // Starting a server
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, '::', () => {
     console.log(`Server is running on port ${process.env.PORT}`);
 });

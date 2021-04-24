@@ -6,6 +6,7 @@ exports.requireSignin = async (req, res, next) => {
     else {
         const token = req.headers.authorization.split(" ")[1];
         try {
+            console.log('cookie', req.cookies, req.signedCookies);
             const user = jwt.verify(token, process.env.JWT_SECRET);
             if (user) {
                 // if (req.ip !== user.ip) return res.status(511).json({ message: 'Access denied' });

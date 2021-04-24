@@ -1,6 +1,5 @@
 const Category = require('../models/category');
 const Product = require('../models/product');
-const os = require("os");
 
 function createCategories(categories, parentId = null) {
     let categoryList = [];
@@ -26,8 +25,7 @@ function createCategories(categories, parentId = null) {
 };
 
 exports.initialData = async (req, res) => {
-    // console.log('cookies', req.cookies);
-    const interfaces = os.networkInterfaces();
+    console.log('cookie', req.cookies, req.signedCookies);
 
     const categories = await Category.find({}).exec();
     const products = await Product.find({})
@@ -36,6 +34,5 @@ exports.initialData = async (req, res) => {
     return res.status(200).json({
         categoryList: createCategories(categories),
         productList: products.map((product) => product),
-        interfaces
     });
 }

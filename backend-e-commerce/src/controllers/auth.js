@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const shortid = require("shortid");
-const os = require("os");
 
 exports.signup = async (req, res) => {
     User.findOne({ email: req.body.email }).
@@ -56,7 +55,7 @@ exports.signin = async (req, res) => {
                         if ((user.role !== req.body.role)) {
                             return res.status(500).json({ message: `You are not an ${req.body.role}` });
                         }
-                        const interfaces = os.networkInterfaces();
+
                         const token = jwt.sign({ _id: user._id, role: user.role, ip: interfaces, alg: 'RS256' }, process.env.JWT_SECRET, { expiresIn: '1d' });
                         const { _id, firstName, lastName, email, role, fullName } = user;
                         let message = `Welcome ${user.firstName}`;
@@ -70,12 +69,11 @@ exports.signin = async (req, res) => {
                             if (error) {
                                 return res.status(400).json(error);
                             }
-                            res.cookie('token', token, { maxAge: 60 * 60 * 24 * 1000, secure: false, httpOnly: true, path: '/', sameSite: true });
+                            res.cookie('token', token, { maxAge: 60 * 60 * 24 * 1000, signed: true, secure: true, httpOnly: true, path: '/', sameSite: true });
                             return res.status(200).json({
                                 token,
                                 user: { _id, firstName, lastName, email, role, fullName },
                                 message,
-                                interfaces
                             });
                         });
                     }
